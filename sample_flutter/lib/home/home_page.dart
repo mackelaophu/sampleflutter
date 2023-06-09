@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sample_flutter/home/index.dart';
+import 'package:sample_flutter/navigation/navigation_bloc.dart';
+import 'package:sample_flutter/navigation/navigation_event.dart';
+import 'package:sample_flutter/navigation/navigation_state.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -44,7 +48,18 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: HomeScreen(bloc: widget.bloc),
+      body: BlocBuilder<NavigationBloc, NavigationState>(builder: (context,state) {
+        return switch (state) {
+          NavigationInitial() => const Text("loading"),
+          NavigationLoading() => const Center(child: CircularProgressIndicator(),),
+          NavigationLoaded() => HomeScreen(bloc: widget.bloc)
+        };
+      }
+      ),floatingActionButton: FloatingActionButton(
+        onPressed: () => context.read<NavigationBloc>().add(NavigationAddScreen()),
+        tooltip: 'Start',
+        child: const Icon(Icons.timer),
+      ),
     );
   }
 }
